@@ -64,13 +64,14 @@ app.MapGet("/", () => "Hello World!");
 
 app.MapPost("/auth", async (UserLoginDto userLoginDto) =>
 {
-    if(userLoginDto == null)
+    if((userLoginDto == null || userLoginDto.UserName ==null || userLoginDto.Password == null))
     {
         return Results.BadRequest("Login Inválido");
     }
     else
     {
         var dataBaseConnectionFactory = new DataBaseConnectionFactory(connectionString);
+
         IAuthRepository auth = new AuthRepository(dataBaseConnectionFactory);
         var authService = new AuthService(auth);
         var result = await authService.Login(userLoginDto);

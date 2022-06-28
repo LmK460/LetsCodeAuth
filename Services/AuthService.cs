@@ -5,7 +5,7 @@ namespace MinimalLetsApiAuth.Services
 {
     public class AuthService
     {
-        public IAuthRepository authRepository { get; }
+        private IAuthRepository authRepository { get; }
 
         public AuthService(IAuthRepository authRepository)
         {
@@ -14,9 +14,8 @@ namespace MinimalLetsApiAuth.Services
 
         public async Task<bool> Login(UserLoginDto userLogingDto)
         {
-            var authResult = await authRepository.Autenticate(userLogingDto);
-            Console.WriteLine(authResult);
-            return authResult;
+            
+            return await authRepository.Autenticate(userLogingDto); ;
 
         }
 
