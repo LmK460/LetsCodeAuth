@@ -1,10 +1,10 @@
-﻿using MinimalLetsApiAuth.Model;
+﻿using MinimalLetsApiAuth.DTO;
 
 namespace MinimalLetsApiAuth.Domain.Interfaces
 {
     public interface IAuthRepository
     {
-        Task<bool> Autenticate(UserLoginDto userLoginDto);
+        Task<bool> Autenticate(UserLoginDTO userLoginDto);
 
     }
 }

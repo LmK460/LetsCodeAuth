@@ -1,5 +1,5 @@
 ﻿using MinimalLetsApiAuth.Domain.Interfaces;
-using MinimalLetsApiAuth.Model;
+using MinimalLetsApiAuth.DTO;
 
 namespace MinimalLetsApiAuth.Services
 {
@@ -12,10 +12,26 @@ namespace MinimalLetsApiAuth.Services
             this.authRepository = authRepository;
         }
 
-        public async Task<bool> Login(UserLoginDto userLogingDto)
+        public async Task<LoginResponseDTO> Login(UserLoginDTO userLogingDTO)
         {
-            
-            return await authRepository.Autenticate(userLogingDto); ;
+            try
+            {
+                var authResult = await authRepository.Autenticate(userLogingDTO);
+                if (authResult ==true)
+                {
+                    //GENERATE TOKEN
+                    //CREATE RESPONSE
+                    return new LoginResponseDTO { Autenticated = true, Message = "usuário autenticado com sucesso" };
+                }
+                else
+                {
+                    return new LoginResponseDTO { Autenticated = false, Message = "Erro ao tentar autenticar" };
+                }
+            }
+            catch (Exception)
+            {
+                return new LoginResponseDTO { Autenticated = false, Message = "Erro ao tentar autenticar" };
+            }    
 
         }
 

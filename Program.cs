@@ -3,7 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Swashbuckle.AspNetCore;
 using Microsoft.OpenApi.Models;
-using MinimalLetsApiAuth.Model;
+using MinimalLetsApiAuth.DTO;
 using MinimalLetsApiAuth.Services;
 using MinimalLetsApiAuth.Domain.Interfaces;
 using MinimalLetsApiAuth.Repository;
@@ -22,7 +22,6 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "letsCodeAuthAPI", Version = "v1" });
 });
 
-//builder.Services.AddDbContext<>
 
 #region JWT scope
 builder.Services.AddAuthentication(z =>
@@ -62,9 +61,9 @@ app.UseAuthentication();
 
 app.MapGet("/", () => "Hello World!");
 
-app.MapPost("/auth", async (UserLoginDto userLoginDto) =>
+app.MapPost("/auth", async (UserLoginDTO userLoginDTO) =>
 {
-    if((userLoginDto == null || userLoginDto.UserName ==null || userLoginDto.Password == null))
+    if((userLoginDTO == null || userLoginDTO.UserName ==null || userLoginDTO.Password == null))
     {
         return Results.BadRequest("Login Inválido");
     }
@@ -74,11 +73,11 @@ app.MapPost("/auth", async (UserLoginDto userLoginDto) =>
 
         IAuthRepository auth = new AuthRepository(dataBaseConnectionFactory);
         var authService = new AuthService(auth);
-        var result = await authService.Login(userLoginDto);
-        if (result)
-            return Results.Ok("Com sucesso");
+        var result = await authService.Login(userLoginDTO);
+        if (result.Autenticated)
+            return Results.Ok(result);
         else
-            return Results.BadRequest("Usuario ou senha inválido");
+            return Results.BadRequest(result);
     }
 });
 #endregion
