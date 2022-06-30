@@ -2,7 +2,7 @@
 {
     public class User
     {
-        public Role Role { get; set; }  
-        public string UserName { get; set; }
+        public Role.RoleType? Role { get; set; }  
+        public string? UserName { get; set; }
     }
 }

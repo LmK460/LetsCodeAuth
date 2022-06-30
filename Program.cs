@@ -14,7 +14,9 @@ var builder = WebApplication.CreateBuilder(args);
 var key = Encoding.ASCII.GetBytes(builder.Configuration["TokenConfigurations:secureKey"]);
 //Carregando connectionstring
 var connectionString = builder.Configuration.GetConnectionString("PostGreesConnection");
-
+var dataBaseConnectionFactory = new DataBaseConnectionFactory(connectionString);
+var authRepository = new AuthRepository(dataBaseConnectionFactory);
+var userRepository = new UserRepository(dataBaseConnectionFactory);
 #region Configure Services
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -68,11 +70,10 @@ app.MapPost("/auth", async (UserLoginDTO userLoginDTO) =>
         return Results.BadRequest("Login Inválido");
     }
     else
-    {
-        var dataBaseConnectionFactory = new DataBaseConnectionFactory(connectionString);
+    {   
+        
 
-        IAuthRepository auth = new AuthRepository(dataBaseConnectionFactory);
-        var authService = new AuthService(auth);
+        var authService = new AuthService(authRepository, userRepository, builder);
         var result = await authService.Login(userLoginDTO);
         if (result.Autenticated)
             return Results.Ok(result);

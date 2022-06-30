@@ -6,16 +6,16 @@ using System.Data;
 
 namespace MinimalLetsApiAuth.Repository
 {
-    public class UserRespository
+    public class UserRepository : IUserRepository
     {
         public IDatabaseConnectionFactory DatabaseConnectionFactory { get; }
 
-        public UserRespository(IDatabaseConnectionFactory databaseConnectionFactory)
+        public UserRepository(IDatabaseConnectionFactory databaseConnectionFactory)
         {
             DatabaseConnectionFactory = databaseConnectionFactory;
         }
 
-        public async Task<int> GetRole(UserLoginDTO userLoginDTO)
+        public async Task<Role.RoleType> GetRole(UserLoginDTO userLoginDTO)
         {
             using (var conn = await DatabaseConnectionFactory.GetConnectionFactoryAsync())
             {
@@ -25,7 +25,7 @@ namespace MinimalLetsApiAuth.Repository
                     cmd.Parameters.AddWithValue("name", userLoginDTO.UserName);
                     cmd.Prepare();
                     var reader = cmd.ExecuteScalarAsync();
-                    var result = (int)reader.Result;
+                    var result = (Role.RoleType)reader.Result;
 
                     return result;
                 }
