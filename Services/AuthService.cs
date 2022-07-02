@@ -1,5 +1,7 @@
-﻿using MinimalLetsApiAuth.Domain.Interfaces;
+﻿using MinimalLetsApiAuth.Domain.Configure;
+using MinimalLetsApiAuth.Domain.Interfaces;
 using MinimalLetsApiAuth.DTO;
+using MinimalLetsApiAuth.Models;
 
 namespace MinimalLetsApiAuth.Services
 {
@@ -7,9 +9,15 @@ namespace MinimalLetsApiAuth.Services
     {
         private IAuthRepository authRepository { get; }
 
-        public AuthService(IAuthRepository authRepository)
+        private IUserRepository userRepository { get; }
+
+        private WebApplicationBuilder webApplicationBuilder { get; }
+
+        public AuthService(IAuthRepository authRepository, IUserRepository userRepository, WebApplicationBuilder webApplicationBuilder)
         {
             this.authRepository = authRepository;
+            this.userRepository = userRepository;
+            this.webApplicationBuilder = webApplicationBuilder;
         }
 
         public async Task<LoginResponseDTO> Login(UserLoginDTO userLogingDTO)
@@ -20,8 +28,13 @@ namespace MinimalLetsApiAuth.Services
                 if (authResult ==true)
                 {
                     //GENERATE TOKEN
+                    
+                    var role = await userRepository.GetRole(userLogingDTO);
+                    var user = new User { Role = role, UserName = userLogingDTO.UserName };
+                    var token = new TokenFactory(webApplicationBuilder).GenerateToken(user);
                     //CREATE RESPONSE
-                    return new LoginResponseDTO { Autenticated = true, Message = "usuário autenticado com sucesso" };
+                    return new LoginResponseDTO { Autenticated = true, Message = "usuário autenticado com sucesso",AccessToken = token.AccessToken,
+                                                 Created=token.Created,Expiration=token.Expiration,Role = user.Role.ToString()};
                 }
                 else
                 {
